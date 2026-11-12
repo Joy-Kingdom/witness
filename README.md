@@ -1,89 +1,91 @@
-# WITNESS - Same invoice. Wrong account.
+# WITNESS: Same invoice, wrong account
 
 ![WITNESS logo](app/assets/witness-logo.png)
 
-**An AI agent may propose a payment. It can never expand the authorization its owner gave it.**
+WITNESS is a small NEAR contract with one job: stop an AI agent from paying the wrong account.
 
-WITNESS is a payment-integrity system for the agent economy, built on NEAR. The owner signs a **Trusted Payment Mandate** - supplier, exact recipient account, amount cap, invoice fingerprint, one payment, expiry - *before* any invoice reaches the agent. Invoices are untrusted input: they can mislead the agent, but they cannot rewrite the mandate. The vault contract re-checks every proposal against the mandate at execution time and records the outcome - paid or denied, with the reason - as permanent on-chain evidence.
+Here is the problem. People are starting to let AI agents handle payments. The agent reads an invoice and pays it. But an invoice can be rigged. A fake one can hide instructions inside it, in invisible text or strange characters, that push the agent to send the money somewhere else. If the agent holds the keys, that trick can work.
 
-> The AI read the wrong instructions. The contract followed the right authorization.
+So WITNESS takes the agent out of the final decision. Before any invoice shows up, the owner writes down exactly what may be paid: which supplier, which account, the highest amount, and a fingerprint of the one approved invoice. That written order is a mandate, and it lives inside the contract. Later the agent can propose a payment, but the contract compares the proposal against the mandate, point by point. If anything is different, the payment is refused, and the refusal is stored on-chain with the reason why. You do not have to trust the agent, the invoice, or even this README. The record is public, and you can check it yourself.
 
-## The recorded proof (NEAR Testnet - verify it yourself)
+## See it on Testnet
 
-Under owner mandate **M4** on the live contract, two proposals were executed:
+This already happened on the live contract, under the owner's mandate M4. The agent made two proposals:
 
-| Proposal | Agent asked to pay | Contract result |
+| Proposal | The agent tried to pay | What the contract did |
 |---|---|---|
-| **P5** | `mujeebwajid-witness-agent.testnet` (the agent's own account) | **DENIED - RECIPIENT_MISMATCH**, recorded on-chain |
-| **P6** | `mujeebwajid-witness-supplier.testnet` (the approved supplier) | **PAID - 0.005 NEAR**, settled only after the async payout callback |
+| **P5** | `mujeebwajid-witness-agent.testnet` (its own account) | **Refused it: RECIPIENT_MISMATCH**, and wrote the refusal on-chain |
+| **P6** | `mujeebwajid-witness-supplier.testnet` (the approved supplier) | **Paid it: 0.005 NEAR**, settled after the payout callback confirmed |
 
 - Contract: `mujeebwajid-witness-vault.testnet`
 - P5 transaction: https://testnet.nearblocks.io/txns/2Ckv4xy9GkNjWef4zN2T3qB9zb6qhhkMo2c6BJbs1Q3k
 - P6 transaction: https://testnet.nearblocks.io/txns/9GToMDg9Qw1QCSKeiq4vea9V7a6ZmtCKv69RtQBFXQUv
-- Or open the app's **Payment Evidence** page (`/reviewer`): it re-reads finalized contract state and transaction receipts from public RPC and lets you download an **evidence receipt** - don't trust this README, check the chain.
+- Or open the app's evidence page (`/reviewer`). It reads the contract state and the transaction receipts fresh from public RPC, checks the invoice fingerprint in your browser, and lets you download an evidence receipt.
 
-## Why this is the need of the hour
+## Why this matters now
 
-Business email compromise - the family that invoice fraud belongs to - cost victims **$3.05 billion across 24,768 complaints in 2025** (FBI IC3 2025 report). In October 2026, Sublime Security documented the next evolution: an invoice-fraud campaign hiding prompt-injection instructions (invisible Unicode tag characters) inside fake invoices, aimed at AI agents that read email (attempted; no completed agent payment was reported). The step after that is an agent with a wallet.
+Invoice fraud is not a small problem. The FBI's IC3 report counted $3.05 billion in losses from business email compromise in 2025, across 24,768 complaints. In October 2026, Sublime Security wrote about the next step: fake invoices with hidden prompt-injection text inside them, aimed at AI agents that read email. That campaign was an attempt, and no completed agent payment was reported. But it shows where this is going. First the fake invoice fooled people. Now it is written to fool the agent that pays for them.
 
-Agent wallets, spend caps and policy wrappers are everywhere in this hackathon. WITNESS defends the layer they skip: **the business decision itself.** Caps limit *how much* an agent can lose; a mandate decides *who was ever allowed to be paid*, bound to the fingerprint of the invoice the owner actually approved - committed by the owner before the agent is ever exposed to untrusted content.
+Plenty of tools in this hackathon give agent wallets spending caps and allowlists. Caps are useful, but a cap only limits how much an agent can lose. It does not decide who was ever allowed to be paid. WITNESS works on that earlier question, and ties it to the fingerprint of the exact invoice the owner approved, written down before the agent ever saw any invoice.
 
-- **NEAR Business protects a treasury from outsiders. WITNESS protects it from its own software.**
-- Simulated guard demos show a block happening. WITNESS shows a block that **already happened, on-chain, with a receipt**.
+A simple way to say it: NEAR Business protects a treasury from outsiders. WITNESS protects it from its own software.
 
-## No AI in the authorization path
+## Why there is no AI guard
 
-Several strong entries put a second AI - a guardian model, an enclave signer - between the agent and the money. WITNESS deliberately does not. The guard is a deterministic contract doing exact comparisons: recipient, cap, fingerprint, version, expiry. No model is consulted, so no model can be persuaded, and no enclave liveness is required. NEAR AI's own November 2026 incident report made the same point from the other side: confidential computing does not protect against a flaw in the software running inside the enclave. The authorization path should contain as little software - and no intelligence - as possible.
+Some strong projects put a second AI between the agent and the money: a guardian model that reviews each payment. WITNESS does not do that, on purpose. The check here is a plain contract comparing exact values: the account, the amount cap, the invoice fingerprint, the version, the expiry date. No model is asked, so no model can be talked into saying yes. NEAR AI's own incident report from November 2026 is a good reminder of why: their confidential setup was undermined by a flaw in the software running inside it. The fewer smart parts sit between an order and its execution, the fewer ways there are to fool them.
 
 ## What is in this repo
 
-- `contract/witness.ts` - NEAR contract (near-sdk-js). Owner-only `fund / create_mandate / revise_mandate / revoke_mandate`; agent-only `propose / execute`, roles enforced by predecessor account. `execute()` re-validates 9 conditions (revoked, consumed, expired, policy-version drift, recipient, cap, invoice fingerprint, mandate binding, vault balance). Denials **persist** with reasons (a reverting call would erase the evidence). Payout is async: a proposal is `PAID` only inside the private callback; a failed transfer restores funds and un-consumes the mandate.
-- `app/` - zero-dependency Node server and UI:
-  - **The Case** - the recorded M4 / P5 / P6 story, one recipient swapped, highlighted in seconds.
-  - **Attack Lab** - 7 preset attacks plus *your own* injected instruction, run against a deterministic local reference model of the contract (clearly labelled simulation; moves no funds).
-  - **Testnet Observer** - read-only, finalized RPC reads of the real contract with multi-provider fallback (FastNear → NEAR → dRPC; archival endpoint for transaction receipts). Wrong state is never invented: failures show UNVERIFIED.
-  - **Payment Evidence (`/reviewer`)** - independent re-check of mandate, proposals, invoice fingerprint (SHA-256, computed locally in your browser; the file never leaves your device) and a downloadable evidence receipt.
-- `core/` - the reference policy model, the deliberately gullible custom-input parser (a heuristic, **not** an LLM), and the allow-listed RPC reader.
-- `tests/` - 23 deterministic tests (`npm test`), NEAR Sandbox suites for the real contract (`npm run test:near`), and a restricted function-call-key test (agent key scoped to `propose`/`execute` only) - **run and passed on NEAR Sandbox, 12 Nov 2026**: the restricted key settled exactly one approved payment and was rejected for direct transfers, mandate creation/revision, the private callback, calls to other accounts, and attached deposits.
+- `contract/witness.ts` - the NEAR contract, written with near-sdk-js. Only the owner can fund the vault and create, change, or cancel a mandate. Only the agent can propose and execute, and the contract knows who is calling. When the agent executes, the contract checks 9 things (cancelled, already used, expired, policy changed, right account, under the cap, invoice fingerprint, mandate match, enough balance). A refusal is saved as a record, not thrown away as an error, because the refusal is the evidence. Money only counts as paid after the payout callback confirms the transfer went through. If a transfer fails, the funds and the mandate are restored.
+- `app/` - a small Node server with no dependencies, and three pages:
+  - **The Case** - the M4 story above, told step by step: the rigged invoice, the owner's order, the agent's proposal, the refusal.
+  - **Attack Lab** - 7 ready-made attacks, plus a box where you can type your own hidden instruction and watch what happens. This runs on a local copy of the contract's rules. It is a simulation and moves no funds, and the page says so.
+  - **Payment Evidence (`/reviewer`)** - the checking page described above, with downloads for an evidence receipt (JSON) and the audit trail (CSV, the kind of file an accountant can open).
+- `core/` - the local copy of the checking rules, the simple parser that plays the part of the agent (it is a basic heuristic, not a real AI model), and the RPC reader that only talks to approved NEAR endpoints.
+- `tests/` - 23 quick tests that run anywhere (`npm test`), plus NEAR Sandbox suites that run the real compiled contract (`npm run test:near`).
 
-## Quick start
+One test is worth calling out. The agent in WITNESS does not use a full-access key. It uses a NEAR function-call key that can only call two methods, `propose` and `execute`, on this one contract. The Sandbox test for that key passed on 12 Nov 2026: with only that key, one approved payment went through, and everything else was rejected: a direct transfer, creating or changing a mandate, calling the private payout callback, calling other accounts, and sending a payment with a deposit attached. Giving an agent a key that can only do its job is a NEAR feature, and this project leans on it hard.
+
+## Run it yourself
 
 ```bash
-npm test          # 23 deterministic tests, no network needed
-npm start         # http://localhost:4173  (Attack Lab + observer)
+npm test          # 23 tests, no network needed
+npm start         # http://localhost:4173
 ```
 
-To point the observer at the live contract:
+To watch the real Testnet contract instead of the local demo:
 
 ```bash
 WITNESS_TESTNET_ACCOUNT=mujeebwajid-witness-vault.testnet npm start
 ```
 
-Then open `/reviewer`, choose P5 or P6, and press **Check against Testnet**.
+Then open `/reviewer`, pick P5 or P6, and press **Check against Testnet**.
 
-## Honest limits
+## What WITNESS cannot do
 
-- Testnet demonstration only. Not audited. Do not use with real funds.
-- The mandate is only as trustworthy as the owner's enrollment; WITNESS proves a payment matched the owner's authorization, not that the supplier is honest.
-- The Attack Lab's "agent" is a deterministic heuristic parser, not a production LLM agent.
-- The reviewer page is served from the same origin in this prototype; a production version would be independently hosted.
-- The bounded claim is exact: **the contract cannot execute what was not exactly authorized, no matter what any screen says.** WITNESS does not claim to reproduce or prevent the Bybit hack; its permission-change framing is a NEAR-analogous class (key and code changes), and NEAR has no DELEGATECALL.
+Being straight about the limits, because judges should hear them from me:
+
+- This is a Testnet demo. It is not audited. Do not use it with real money.
+- A mandate proves a payment matched what the owner approved. It does not prove the supplier is honest, only that the payment went where the owner said.
+- The agent in the Attack Lab is a simple parser standing in for a real AI agent, so I could test the contract's side of the story properly.
+- The evidence page is served by the same small server in this prototype. In real use it should live somewhere independent.
+- The claim is narrow and exact: **the contract cannot execute what was not exactly authorized, no matter what any screen says.** WITNESS does not claim to reproduce or prevent the Bybit hack. NEAR has no DELEGATECALL; the similar risk here is permission changes like adding a full-access key or replacing contract code, and that is the class this design speaks to.
 
 ## Tracks
 
 AI Security & Defense (primary) · Agent Economy · Autonomous Business · Real-World Money
 
-The AI Security & Defense brief asks for exactly this shape: *"Give AI money without giving it the keys to everything."* The Agent Economy brief asks for *"a receipt for every task"* - WITNESS issues receipts for refusals too, and exports the audit trail as CSV an accountant can open.
+The AI Security & Defense brief says: "Give AI money without giving it the keys to everything." That is the whole design. The Agent Economy brief asks for "a receipt for every task." WITNESS writes receipts for refusals too.
 
-## Prior art, stated plainly
+## Other projects, fairly stated
 
-WITNESS did not invent approvals, spend caps, policy contracts, on-chain refusals or document hashing - NEAR Business, Veto, Banbo, APort and others cover parts of that ground, some of them very well. The combination claimed here is narrower and, after reading the field's own READMEs, still unoccupied:
+WITNESS did not invent approvals, spend caps, policy contracts, on-chain refusals, or document hashing. NEAR Business, Veto, Banbo, and others each cover part of this ground, and some do it very well. What I could not find anywhere, after reading their own READMEs, is this exact combination:
 
-1. **The invoice fingerprint lives inside the owner's mandate** - pre-committed by the owner, not supplied by the agent at proposal time.
-2. **The mandate is single-use and single-invoice**: one supplier, one recipient, one payment, then it dies - not a standing policy or a job budget.
-3. **Authorization is deterministic** - no AI, guardian or attestation is consulted when money moves.
-4. **Denials are permanent and productized** - unpruned on-chain refusal records, packaged as an evidence receipt and an accountant-ready CSV.
+1. The invoice fingerprint is written inside the owner's mandate from the start, not handed over by the agent later.
+2. One mandate pays one invoice, once, and then it is finished. It is not a standing policy or a monthly budget.
+3. No AI, guardian, or attestation service is consulted when money moves. The check is exact comparison, nothing more.
+4. Refusals are kept forever and packaged as evidence you can download, not trimmed to the latest few.
 
-See `docs/POSITIONING.md` for the full comparison and `docs/MANDATE_PATTERN.md` if you want to reuse the pattern - it is a public good, built to be stolen.
+The full comparison is in `docs/POSITIONING.md`. If the mandate pattern is useful to you, `docs/MANDATE_PATTERN.md` explains it as a reusable pattern. Take it, that is what it is there for.
 
-MIT License. Hackathon prototype; no warranties.
+MIT License. Hackathon prototype, no warranties.
