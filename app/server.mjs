@@ -129,4 +129,4 @@ const server=http.createServer(async(req,res)=>{
     send(res,404,{error:'Not found'});
   } catch(error){send(res,400,{error:error.message});}
 });
-server.listen(PORT,'127.0.0.1',()=>console.log(`WITNESS: http://localhost:${PORT}\nSIMULATOR: local only. TESTNET OBSERVER: ${testnetContract||'not configured'}. Read-only; no signing.`));
+server.listen(PORT,'0.0.0.0',()=>console.log(`WITNESS: http://localhost:${PORT}\nSIMULATOR: local only. TESTNET OBSERVER: ${testnetContract||'not configured'}. Read-only; no signing.`));
