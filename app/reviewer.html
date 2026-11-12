@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/png" href="/assets/favicon.png"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f6f4ec">
+<title>Payment Evidence - WITNESS</title>
+
+<link rel="stylesheet" href="/styles.css?v=reviewer-final-1"><link rel="stylesheet" href="/witness-motion.css?v=wm1"><link rel="stylesheet" href="/witness-polish.css?v=wp1">
+</head>
+<body class="wt-evidence-page">
+  <div class="wt-ev-shell">
+    <header class="wt-ev-header">
+      <a class="wt-ev-logo" href="/" aria-label="WITNESS homepage"><img src="/assets/witness-mark.png" width="58" height="42" alt=""><span><strong>WITNESS</strong><small>PAYMENT INTEGRITY</small></span></a>
+      <nav aria-label="Evidence navigation"><a href="/#wt-case">The case</a><a href="/#testnet-proof">Chain observer</a><a class="wt-ev-quiet" href="/">Back to WITNESS <span aria-hidden="true">↗</span></a></nav>
+    </header>
+    <main>
+      <section class="wt-ev-intro" aria-labelledby="wt-ev-heading">
+        <div class="wt-ev-kicker"><span class="wt-ev-catalog">W / 002</span><span>PUBLIC CHAIN RECORD</span></div>
+        <div class="wt-ev-title-row"><div><h1 id="wt-ev-heading">Don't trust the demo<br><em>Check the record</em></h1><p>The owner approved a supplier. The agent asked to pay another account. Compare what happened against NEAR Testnet - without submitting a transaction.</p></div><aside class="wt-ev-ref"><span>EVIDENCE FILE</span><strong>04</strong><small>MANDATE M4<br>PROPOSALS P5 / P6</small></aside></div>
+      </section>
+      <section class="wt-ev-case" aria-labelledby="wt-ev-case-title">
+        <div class="wt-ev-case-top"><div><span class="wt-ev-eyebrow">01 / PAYMENT RECORD</span><h2 id="wt-ev-case-title">One approval, two outcomes</h2></div><div class="wt-ev-switch" role="group" aria-label="Select a recorded proposal"><button type="button" id="wt-ev-p5" aria-pressed="true" class="is-active">P5 · Denied</button><button type="button" id="wt-ev-p6" aria-pressed="false">P6 · Paid</button></div></div>
+        <div class="wt-ev-sheets">
+          <article class="wt-ev-sheet"><span class="wt-ev-sheet-kicker">01 / OWNER APPROVAL</span><h3>WITNESS Demo Supplier</h3><dl><div><dt>Recipient</dt><dd id="wt-ev-approved">mujeebwajid-witness-<b>supplier</b>.testnet</dd></div><div><dt>Maximum</dt><dd>0.005 NEAR</dd></div><div><dt>Mandate</dt><dd>M4</dd></div></dl></article>
+          <div class="wt-ev-versus" aria-hidden="true" id="wt-ev-versus">≠</div>
+          <article class="wt-ev-sheet wt-ev-sheet-agent"><span class="wt-ev-sheet-kicker">02 / AGENT REQUEST</span><h3 id="wt-ev-supplier">Different account</h3><dl><div><dt>Recipient</dt><dd id="wt-ev-requested">mujeebwajid-witness-<b class="wt-ev-flag">agent</b>.testnet</dd></div><div><dt>Amount</dt><dd>0.005 NEAR</dd></div><div><dt>Proposal</dt><dd id="wt-ev-pid">P5</dd></div></dl></article>
+        </div>
+        <div id="wt-ev-verdict" class="wt-ev-verdict" aria-live="polite"><span class="wt-ev-stamp" id="wt-ev-stamp">DENIED</span><div><strong id="wt-ev-verdict-head">Recipient mismatch</strong><p id="wt-ev-verdict-sub">P5 was denied. This is a recorded historical outcome, not a fresh live check.</p></div><a id="wt-ev-explorer" href="https://explorer.testnet.near.org/transactions/2Ckv4xy9GkNjWef4zN2T3qB9zb6qhhkMo2c6BJbs1Q3k" target="_blank" rel="noopener noreferrer">View receipt ↗</a></div>
+        <div class="wt-ev-verify-row"><div><span class="wt-ev-eyebrow">02 / VERIFY ON TESTNET</span><p id="wt-ev-live" role="status" aria-live="polite">Historical reference. Live contract state has not been checked.</p></div><button type="button" id="wt-ev-check">Check against Testnet <span aria-hidden="true">↗</span></button><button type="button" id="wt-ev-receipt">Download evidence receipt</button><button type="button" id="wt-ev-csv">Audit trail (CSV)</button></div>
+      </section>
+      <section class="wt-ev-fingerprint" aria-labelledby="wt-ev-fingerprint-heading"><div class="wt-ev-fingerprint-head"><div><span class="wt-ev-eyebrow">03 / SOURCE FINGERPRINT</span><h2 id="wt-ev-fingerprint-heading">Does the invoice match?</h2></div><span class="wt-ev-fp-index">SHA–256 / UTF–8</span></div><p>Check the original sample invoice file or text against the hash stored under M4. The file stays on your device. Matching a hash proves byte consistency, not supplier identity.</p><div class="wt-ev-fp-input"><label for="wt-ev-file">Source invoice file</label><input type="file" id="wt-ev-file" aria-describedby="wt-ev-fp-help"><span id="wt-ev-fp-help">Choose the exact source used when M4 was created - or paste its UTF-8 text below.</span><label for="wt-ev-text">Invoice text</label><textarea id="wt-ev-text" rows="3" placeholder="Paste exact original text (including line breaks)"></textarea></div><div class="wt-ev-fp-actions"><button type="button" id="wt-ev-hash">Compare fingerprint</button><span id="wt-ev-hash-status" role="status" aria-live="polite">Requires a successful live M4 check.</span></div><details><summary>Show on-chain fingerprint and raw record</summary><div class="wt-ev-rawbox"><span>ON-CHAIN M4 SHA-256</span><code id="wt-ev-chain-hash">Not loaded</code><span>READ-ONLY RPC RESPONSE</span><pre id="wt-ev-raw">Run “Check against Testnet” above to load a public record.</pre></div></details></section>
+      <footer class="wt-ev-footer"><span>WITNESS / PUBLIC TESTNET EVIDENCE</span><span>Historical Testnet demonstration · Read-only verification · Not audited</span></footer>
+    </main>
+  </div>
+  <script defer src="/main.js?v=reviewer-final-1"></script>
+  <script defer src="/reviewer.js?v=receipt-1"></script>
+  <script defer src="/witness-motion.js?v=wm1"></script>
+</body>
+</html>

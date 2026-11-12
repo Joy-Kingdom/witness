@@ -1,0 +1,133 @@
+{
+  "captured_at": "2026-11-12T14:58:28.059Z",
+  "contract": "mujeebwajid-witness-vault.testnet",
+  "cases": {
+    "P5": {
+      "mandate": {
+        "id": "M4",
+        "supplier": "WITNESS Demo Supplier",
+        "recipient": "mujeebwajid-witness-supplier.testnet",
+        "cap_yocto": "5000000000000000000000",
+        "invoice_hash": "sha256:891371af2a19636795f4b62010957e3526c2340a2730a1b9caa8df857de506c5",
+        "expires_at_ns": "1794421563000000000",
+        "version": 1,
+        "revoked": false,
+        "consumed": true,
+        "status": "PAID"
+      },
+      "proposal": {
+        "id": "P5",
+        "mandate_id": "M4",
+        "recipient": "mujeebwajid-witness-agent.testnet",
+        "amount_yocto": "5000000000000000000000",
+        "invoice_hash": "sha256:891371af2a19636795f4b62010957e3526c2340a2730a1b9caa8df857de506c5",
+        "mandate_version": 1,
+        "status": "DENIED",
+        "reasons": [
+          "RECIPIENT_MISMATCH"
+        ]
+      },
+      "vault": {
+        "available_yocto": "35000000000000000000000",
+        "inflight_yocto": "0",
+        "owner": "mujeebwajid-witness-owner.testnet",
+        "agent": "mujeebwajid-witness-agent.testnet"
+      },
+      "blocks": {
+        "vault": 277378336,
+        "audit": 277378337
+      },
+      "rpc": "https://test.rpc.fastnear.com",
+      "tx": {
+        "simulation": false,
+        "network": "testnet",
+        "contract": "mujeebwajid-witness-vault.testnet",
+        "finalized": true,
+        "final_execution_status": "FINAL",
+        "payment_outcome": "DENIED",
+        "contract_events": [
+          {
+            "event": "PAYMENT_DENIED",
+            "data": [
+              {
+                "id": "P5",
+                "reasons": [
+                  "RECIPIENT_MISMATCH"
+                ]
+              }
+            ]
+          }
+        ],
+        "explorer_url": "https://testnet.nearblocks.io/txns/2Ckv4xy9GkNjWef4zN2T3qB9zb6qhhkMo2c6BJbs1Q3k",
+        "caution": "A successful transaction status alone does not prove a payment. The outcome above is derived only from WITNESS contract events."
+      }
+    },
+    "P6": {
+      "mandate": {
+        "id": "M4",
+        "supplier": "WITNESS Demo Supplier",
+        "recipient": "mujeebwajid-witness-supplier.testnet",
+        "cap_yocto": "5000000000000000000000",
+        "invoice_hash": "sha256:891371af2a19636795f4b62010957e3526c2340a2730a1b9caa8df857de506c5",
+        "expires_at_ns": "1794421563000000000",
+        "version": 1,
+        "revoked": false,
+        "consumed": true,
+        "status": "PAID"
+      },
+      "proposal": {
+        "id": "P6",
+        "mandate_id": "M4",
+        "recipient": "mujeebwajid-witness-supplier.testnet",
+        "amount_yocto": "5000000000000000000000",
+        "invoice_hash": "sha256:891371af2a19636795f4b62010957e3526c2340a2730a1b9caa8df857de506c5",
+        "mandate_version": 1,
+        "status": "PAID",
+        "reasons": []
+      },
+      "vault": {
+        "available_yocto": "35000000000000000000000",
+        "inflight_yocto": "0",
+        "owner": "mujeebwajid-witness-owner.testnet",
+        "agent": "mujeebwajid-witness-agent.testnet"
+      },
+      "blocks": {
+        "vault": 277378338,
+        "audit": 277378338
+      },
+      "rpc": "https://test.rpc.fastnear.com",
+      "tx": {
+        "simulation": false,
+        "network": "testnet",
+        "contract": "mujeebwajid-witness-vault.testnet",
+        "finalized": true,
+        "final_execution_status": "FINAL",
+        "payment_outcome": "PAID",
+        "contract_events": [
+          {
+            "event": "PAYMENT_EXECUTING",
+            "data": [
+              {
+                "id": "P6",
+                "to": "mujeebwajid-witness-supplier.testnet",
+                "amount_yocto": "5000000000000000000000"
+              }
+            ]
+          },
+          {
+            "event": "PAYMENT_PAID",
+            "data": [
+              {
+                "id": "P6",
+                "to": "mujeebwajid-witness-supplier.testnet",
+                "amount_yocto": "5000000000000000000000"
+              }
+            ]
+          }
+        ],
+        "explorer_url": "https://testnet.nearblocks.io/txns/9GToMDg9Qw1QCSKeiq4vea9V7a6ZmtCKv69RtQBFXQUv",
+        "caution": "A successful transaction status alone does not prove a payment. The outcome above is derived only from WITNESS contract events."
+      }
+    }
+  }
+}

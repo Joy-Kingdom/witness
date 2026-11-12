@@ -1,0 +1,25 @@
+{
+  "name": "witness-payment-integrity",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "WITNESS 2.0 — mandate-bound AI payments with adversarial evidence",
+  "scripts": {
+    "start": "node app/server.mjs",
+    "test": "node --test tests/policy.test.mjs tests/custom-input.test.mjs tests/testnet-rpc.test.mjs",
+    "demo": "node scripts/demo.mjs",
+    "contract:build": "near-sdk-js build contract/witness.ts build/witness.wasm",
+    "test:near": "node --test tests/near.test.mjs tests/near-extended.test.mjs tests/near-agent-key.test.mjs"
+  },
+  "devDependencies": {
+    "near-sdk-js": "^2.0.0",
+    "near-workspaces": "^5.0.0",
+    "typescript": "5.6.3"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "overrides": {
+    "near-api-js": "5.0.0"
+  }
+}

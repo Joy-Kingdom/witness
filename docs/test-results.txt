@@ -1,0 +1,93 @@
+
+> witness-payment-integrity@0.1.0 test
+> node --test tests/*.test.mjs
+
+TAP version 13
+# Subtest: 01 Valid approved supplier payment settles exactly once
+ok 1 - 01 Valid approved supplier payment settles exactly once
+  ---
+  duration_ms: 2.802859
+  type: 'test'
+  ...
+# Subtest: 02 Recipient substitution denied regardless of AI story
+ok 2 - 02 Recipient substitution denied regardless of AI story
+  ---
+  duration_ms: 0.459539
+  type: 'test'
+  ...
+# Subtest: 03 Amount increased denied
+ok 3 - 03 Amount increased denied
+  ---
+  duration_ms: 0.344756
+  type: 'test'
+  ...
+# Subtest: 04 Replay with new proposal denied after mandate consumed
+ok 4 - 04 Replay with new proposal denied after mandate consumed
+  ---
+  duration_ms: 0.292187
+  type: 'test'
+  ...
+# Subtest: 05 Expired mandate denied
+ok 5 - 05 Expired mandate denied
+  ---
+  duration_ms: 0.301272
+  type: 'test'
+  ...
+# Subtest: 06 Version drift after owner revises mandate denied
+ok 6 - 06 Version drift after owner revises mandate denied
+  ---
+  duration_ms: 0.291777
+  type: 'test'
+  ...
+# Subtest: 07 Agent cannot enroll, revise, revoke or settle as owner
+ok 7 - 07 Agent cannot enroll, revise, revoke or settle as owner
+  ---
+  duration_ms: 0.722442
+  type: 'test'
+  ...
+# Subtest: 08 Prompt-injection changes recipient but does not expand authority
+ok 8 - 08 Prompt-injection changes recipient but does not expand authority
+  ---
+  duration_ms: 0.192448
+  type: 'test'
+  ...
+# Subtest: 09 Wrong invoice authority reference denied
+ok 9 - 09 Wrong invoice authority reference denied
+  ---
+  duration_ms: 2.127658
+  type: 'test'
+  ...
+# Subtest: 10 Failed async payment callback does not claim PAID and restores ledger
+ok 10 - 10 Failed async payment callback does not claim PAID and restores ledger
+  ---
+  duration_ms: 0.846258
+  type: 'test'
+  ...
+# Subtest: 11 Existing proposals fail after revocation
+ok 11 - 11 Existing proposals fail after revocation
+  ---
+  duration_ms: 0.405218
+  type: 'test'
+  ...
+# Subtest: 12 Arbitrary account mutations cannot alter enrolled authority
+ok 12 - 12 Arbitrary account mutations cannot alter enrolled authority
+  ---
+  duration_ms: 0.869573
+  type: 'test'
+  ...
+# Subtest: 13 Monetary units parse without floating point
+ok 13 - 13 Monetary units parse without floating point
+  ---
+  duration_ms: 0.185668
+  type: 'test'
+  ...
+1..13
+# tests 13
+# suites 0
+# pass 13
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 95.385045
+HTTP smoke tests PASS: seeded state, attack rejected, custom attack rejected, valid simulation settled.

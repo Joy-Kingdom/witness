@@ -1,0 +1,15 @@
+WITNESS restricted agent key test - Node.js 22 / @near-js/transactions 1.3.2 fix
+
+Problem: ESM import resolves to lib/esm/index.js with extensionless import './action_creators', causing ERR_MODULE_NOT_FOUND.
+
+Fix: use node:module createRequire to load the CommonJS entry for @near-js/transactions, retaining the same functionCallAccessKey API.
+
+Only tests/near-agent-key.test.mjs has changed; contract, frontend and dependencies unchanged.
+
+Commands (Ubuntu):
+cd ~/projects/WITNESS_2_0
+python3 -m zipfile -e "/mnt/c/Users/DE/Downloads/WITNESS_Agent_Key_ESM_Import_Fix.zip" .
+node -e "console.log(typeof require('@near-js/transactions').functionCallAccessKey)"
+node --test tests/near-agent-key.test.mjs
+
+Expected import smoke-check: function. Full Sandbox test NOT executed by patch author.

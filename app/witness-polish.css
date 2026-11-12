@@ -1,0 +1,16 @@
+/* WITNESS polish pass - alignment and overflow discipline.
+   Loaded last on every page. Rules are defensive: nothing here restyles
+   the design, it only guarantees no element can push the page sideways
+   and that long account IDs wrap inside their boxes. */
+html, body { overflow-x: clip; }
+.shell, .wc-main, .wt-ev-shell { overflow-x: clip; }
+img, svg, video { max-width: 100%; }
+details.w-extra { max-width: 100%; }
+details.w-extra > summary { overflow-wrap: break-word; }
+.chain-config { overflow-wrap: break-word; }
+.chain-search label { min-width: min(180px, 100%); }
+.chain-search input, .chain-search select, .chain-search textarea { max-width: 100%; min-width: 0; }
+.chain-meta dd, .chain-meta strong, #tn-contract, #tn-mandate, #tn-proposal { overflow-wrap: anywhere; }
+.details > div strong, .wc-card dd, .wc-live-row strong { overflow-wrap: anywhere; }
+.wt-paper, .wc-invoice { max-width: 100%; }
+footer, .wc-live-actions, .actions { flex-wrap: wrap; }
