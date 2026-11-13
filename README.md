@@ -2,6 +2,8 @@
 
 ![WITNESS logo](app/assets/witness-logo.png)
 
+**Pitch deck (PDF):** [WITNESS-Deck.pdf](docs/WITNESS-Deck.pdf) - the 10-slide story, with the problem numbers and the Testnet proof.
+
 WITNESS is a small NEAR contract with one job: stop an AI agent from paying the wrong account.
 
 Here is the problem. People are starting to let AI agents handle payments. The agent reads an invoice and pays it. But an invoice can be rigged. A fake one can hide instructions inside it, in invisible text or strange characters, that push the agent to send the money somewhere else. If the agent holds the keys, that trick can work.
