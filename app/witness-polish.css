@@ -14,3 +14,11 @@ details.w-extra > summary { overflow-wrap: break-word; }
 .details > div strong, .wc-card dd, .wc-live-row strong { overflow-wrap: anywhere; }
 .wt-paper, .wc-invoice { max-width: 100%; }
 footer, .wc-live-actions, .actions { flex-wrap: wrap; }
+
+/* Alignment fix (13 Nov 2026): the chain card's summary used a negative
+   margin pull (-var(--wt-outer)) designed to sit inside matching card
+   padding, but the card's own padding is 0 (a stronger rule wins), so the
+   summary stuck out to the left and its marker was clipped. Give the card
+   its intended padding with a more specific rule so the summary band sits
+   exactly inside the card borders at every width. */
+details.w-extra.wt-bound-chain { padding: 0 var(--wt-outer, 30px) clamp(18px, 2.3vw, 30px) !important; }
