@@ -79,12 +79,14 @@ export function makeTestnetReader({ fetchImpl, endpoint, endpoints } = {}) {
     if (proposalId) assertLocalId(proposalId, 'proposal');
     const vault = await view(contract, 'get_vault', {});
     const audit = await view(contract, 'get_audit', {});
-    const mandate = mandateId ? (await view(contract, 'get_mandate', { id: mandateId })).value : null;
-    const proposal = proposalId ? (await view(contract, 'get_proposal', { id: proposalId })).value : null;
+    const mandateRes = mandateId ? await view(contract, 'get_mandate', { id: mandateId }) : null;
+    const proposalRes = proposalId ? await view(contract, 'get_proposal', { id: proposalId }) : null;
+    const mandate = mandateRes?.value ?? null;
+    const proposal = proposalRes?.value ?? null;
     return {
       simulation: false, network: 'testnet', contract, readonly: true,
       vault: vault.value, audit: audit.value, mandate, proposal,
-      blocks: { vault: vault.block_height, audit: audit.block_height },
+      blocks: { vault: vault.block_height, audit: audit.block_height, mandate: mandateRes?.block_height ?? null, proposal: proposalRes?.block_height ?? null },
       rpc: vault.rpc, observed_at: new Date().toISOString(),
     };
   }
