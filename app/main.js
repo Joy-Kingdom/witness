@@ -120,6 +120,11 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initReviewer,{once:true});else initReviewer();
 })();
 
+/* The lab section below belongs to the homepage only. Guard it so this
+   file also parses and runs on the evidence page, which loads it as a
+   classic script (a top-level await there killed every evidence-page
+   button bound earlier in this file). */
+if(document.getElementById('attack-options')){
 let selected='hidden';
 const $=id=>document.getElementById(id);
 const labels={MANDATE_REVOKED:'Mandate was revoked by its owner',MANDATE_ALREADY_USED:'Mandate already consumed',MANDATE_EXPIRED:'Authorized payment window expired',POLICY_VERSION_DRIFT:'Authorization changed after proposal',RECIPIENT_MISMATCH:'Recipient differs from owner mandate',AMOUNT_EXCEEDS_CAP:'Amount exceeds owner-approved cap',INVALID_AMOUNT:'Amount must be positive',INVOICE_REFERENCE_MISMATCH:'Invoice reference differs from the authorized one',MANDATE_MISMATCH:'Wrong mandate',INSUFFICIENT_VAULT_BALANCE:'Vault has insufficient funded balance',UNPARSEABLE_REQUEST:'Input was not recognized; no payment was proposed or executed'};
@@ -140,7 +145,8 @@ text('invoice-note',d.last?.attack?`Fictional adversarial input: ${d.last.attack
 }
 async function run(kind){$('run').disabled=true;$('valid').disabled=true;try{const d=kind==='legitimate'?await call('legitimate'):await call('attack',{id:selected});render(d);text('run-status','Scenario completed • local deterministic model');}catch(e){text('run-status',e.message);}finally{$('run').disabled=false;$('valid').disabled=false;}}
 $('custom-run').addEventListener('click',async()=>{try{const d=await call('custom',{text:$('custom-text').value});render(d);text('run-status',d.last?.kind==='custom-unparsed' ? 'Unrecognized text: no payment was attempted.' : 'Custom instruction parsed by deterministic heuristic (not an LLM).');}catch(e){text('run-status',e.message);}});$('run').addEventListener('click',()=>run('attack'));$('valid').addEventListener('click',()=>run('legitimate'));$('reset').addEventListener('click',async()=>{const d=await call('reset');render(d);text('run-status','Lab reset.');});
-const initial=await state();catalog(initial.scenario_catalog);render(initial);
+(async()=>{try{const initial=await state();catalog(initial.scenario_catalog);render(initial);}catch(e){}})();
+}
 
 
 // WB_DIRECT_4 - historical Testnet cases; no signing.

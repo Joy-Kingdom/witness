@@ -12,7 +12,7 @@ const link=(container,text,url)=>{
   const a=document.createElement('a');a.textContent=text;a.href=url;a.target='_blank';a.rel='noopener noreferrer';
   container.append(a);
 };
-async function getJson(url){const r=await fetch(url,{cache:'no-store'});const data=await r.json();if(!r.ok)throw new Error(data.error||`HTTP ${r.status}`);return data;}
+async function getJson(url){const ctl=new AbortController();const timer=setTimeout(()=>ctl.abort(),30000);try{const r=await fetch(url,{cache:'no-store',signal:ctl.signal});const data=await r.json();if(!r.ok)throw new Error(data.error||`HTTP ${r.status}`);return data;}catch(e){if(e.name==='AbortError')throw new Error('Testnet read timed out');throw e;}finally{clearTimeout(timer);}}
 let config;
 async function refresh(){
   set('tn-feedback','Reading finalized NEAR Testnet state…');
@@ -44,14 +44,15 @@ async function refresh(){
     set('tn-block',`Finalized query blocks: vault ${data.blocks.vault??'-'} · audit ${data.blocks.audit??'-'} (not atomic)`);
     const events=$('tn-events');events.replaceChildren();
     if(!data.audit?.length) events.textContent='No contract audit entries yet.';
-    else for(const e of data.audit.slice(-12).reverse()){
+    else for(const e of [...data.audit].reverse()){
       const item=document.createElement('div');item.className='chain-event';
       const name=document.createElement('strong');name.textContent=e.type||'EVENT';
       const desc=document.createElement('small');desc.textContent=JSON.stringify(e);
       item.append(name,desc);events.append(item);
     }
     set('tn-feedback',`Actual contract storage queried from NEAR Testnet · ${new Date(data.observed_at).toLocaleString()}`);
-  } catch(error){set('tn-feedback',`No verified state: ${error.message}`);set('tn-status','TESTNET · UNVERIFIED');$('tn-status').className='mini-tag danger';}
+  return true;
+  } catch(error){set('tn-feedback',`No verified state: ${error.message}`);set('tn-status','TESTNET · UNVERIFIED');$('tn-status').className='mini-tag danger';return false;}
 }
 async function verify(){
   set('tn-tx-feedback','Verifying transaction through NEAR Testnet RPC…');
@@ -75,7 +76,7 @@ async function verify(){
 async function init(){
   try {config=await getJson('/api/testnet/config');
     if(!config.configured){set('tn-status','TESTNET · NOT CONFIGURED');set('tn-feedback','Set WITNESS_TESTNET_ACCOUNT in Ubuntu and restart the app. The simulation above remains separate.');return;}
-    set('tn-status','TESTNET · CHECKING');set('tn-contract',config.contract);await refresh();
+    set('tn-status','TESTNET · CHECKING');set('tn-contract',config.contract);for(let attempt=0;attempt<3;attempt++){if(await refresh())break;if(attempt<2)await new Promise(r=>setTimeout(r,3000*(attempt+1)));}
   }catch(error){set('tn-feedback',error.message);}
 }
 $('tn-refresh').addEventListener('click',refresh);

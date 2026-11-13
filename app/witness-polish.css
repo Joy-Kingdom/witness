@@ -15,10 +15,15 @@ details.w-extra > summary { overflow-wrap: break-word; }
 .wt-paper, .wc-invoice { max-width: 100%; }
 footer, .wc-live-actions, .actions { flex-wrap: wrap; }
 
-/* Alignment fix (13 Nov 2026): the chain card's summary used a negative
-   margin pull (-var(--wt-outer)) designed to sit inside matching card
-   padding, but the card's own padding is 0 (a stronger rule wins), so the
-   summary stuck out to the left and its marker was clipped. Give the card
-   its intended padding with a more specific rule so the summary band sits
-   exactly inside the card borders at every width. */
-details.w-extra.wt-bound-chain { padding: 0 var(--wt-outer, 30px) clamp(18px, 2.3vw, 30px) !important; }
+/* Alignment fix (13 Nov 2026, revised after full QA): the chain card's
+   summary used a negative margin pull (-var(--wt-outer)) designed to sit
+   inside matching card padding, but the card's own padding is 0 (a
+   stronger rule wins), so the summary stuck out to the left, its marker
+   was clipped, and the pull-down margin left dead white space in the
+   closed card. Normalise BOTH cards to one pattern: no card padding, no
+   summary margins, same summary padding as the lab card, and the same
+   24px text inset for the content sections inside both cards, so
+   headings and content line up the same way in each card. */
+details.w-extra.wt-bound-chain { padding: 0 !important; }
+.wt-bound-chain > summary { margin: 0 !important; padding: 22px 24px !important; }
+details.w-extra > section { padding-left: 24px; padding-right: 24px; }
